@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: 'Shop the latest products with our beautifully designed e-commerce store',
 };
 
+// This layout remains server-side since it doesn't interact with search params
+// All client-side interactivity will be contained within the page components
 export default function RootLayout({
   children,
 }: {

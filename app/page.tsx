@@ -1,4 +1,7 @@
-import { Suspense } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -6,60 +9,51 @@ import Sidebar from "@/components/layout/Sidebar";
 import ProductGrid from "@/components/product/ProductGrid";
 import { products } from "@/lib/data/products";
 
-// Filter products based on URL parameters
-function filterProducts(searchParams: { [key: string]: string | string[] | undefined }) {
-  let filteredProducts = [...products];
-  
-  // Filter by search query
-  const searchQuery = searchParams.search?.toString().toLowerCase();
-  if (searchQuery) {
-    filteredProducts = filteredProducts.filter(
-      (product) => 
-        product.title.toLowerCase().includes(searchQuery) || 
-        product.description.toLowerCase().includes(searchQuery)
-    );
-  }
-  
-  // Filter by category
-  const categoryParam = searchParams.category?.toString();
-  if (categoryParam) {
-    const categories = categoryParam.split(",");
-    filteredProducts = filteredProducts.filter((product) => 
-      categories.includes(product.category)
-    );
-  }
-  
-  // Filter by price range
-  const priceParam = searchParams.price?.toString();
-  if (priceParam) {
-    const [minPrice, maxPrice] = priceParam.split("-").map(Number);
-    filteredProducts = filteredProducts.filter(
-      (product) => product.price >= minPrice && product.price <= maxPrice
-    );
-  }
-  
-  return filteredProducts;
-}
-
-export default function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const filteredProducts = filterProducts(searchParams);
+export default function Home() {
+  const searchParams = useSearchParams();
+  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const maxPrice = Math.max(...products.map(p => p.price));
   
-  // Get active filters for header display
-  const activeFilters = [];
-  if (searchParams.search) activeFilters.push(`Search: "${searchParams.search}"`);
-  if (searchParams.category) {
-    const categories = searchParams.category.toString().split(",");
-    activeFilters.push(`Categories: ${categories.join(", ")}`);
-  }
-  if (searchParams.price) {
-    const [min, max] = searchParams.price.toString().split("-");
-    activeFilters.push(`Price: $${min} - $${max}`);
-  }
+  // Filter products based on URL parameters
+  useEffect(() => {
+    let result = [...products];
+    const newActiveFilters: string[] = [];
+    
+    // Filter by search query
+    const searchQuery = searchParams.get("search")?.toLowerCase();
+    if (searchQuery) {
+      result = result.filter(
+        (product) => 
+          product.title.toLowerCase().includes(searchQuery) || 
+          product.description.toLowerCase().includes(searchQuery)
+      );
+      newActiveFilters.push(`Search: "${searchQuery}"`);
+    }
+    
+    // Filter by category
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      const categories = categoryParam.split(",");
+      result = result.filter((product) => 
+        categories.includes(product.category)
+      );
+      newActiveFilters.push(`Categories: ${categories.join(", ")}`);
+    }
+    
+    // Filter by price range
+    const priceParam = searchParams.get("price");
+    if (priceParam) {
+      const [minPrice, maxPrice] = priceParam.split("-").map(Number);
+      result = result.filter(
+        (product) => product.price >= minPrice && product.price <= maxPrice
+      );
+      newActiveFilters.push(`Price: $${minPrice} - $${maxPrice}`);
+    }
+    
+    setFilteredProducts(result);
+    setActiveFilters(newActiveFilters);
+  }, [searchParams]);
   
   return (
     <>
@@ -89,9 +83,7 @@ export default function Home({
           <Sidebar maxPrice={maxPrice} />
           
           <div className="flex-1">
-            <Suspense fallback={<div>Loading products...</div>}>
-              <ProductGrid products={filteredProducts} />
-            </Suspense>
+            <ProductGrid products={filteredProducts} />
           </div>
         </div>
       </main>
