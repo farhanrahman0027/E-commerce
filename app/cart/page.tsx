@@ -8,7 +8,7 @@ import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 export default function CartPage() {
-  const { items } = useCart();
+  const { items, updateQuantity, removeItem } = useCart();
 
   if (items.length === 0) {
     return (
@@ -34,7 +34,12 @@ export default function CartPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
-            <CartItem key={item.id} item={item} />
+            <CartItem
+              key={item.id}
+              item={item}
+              onUpdateQuantity={updateQuantity}
+              onRemove={removeItem}
+            />
           ))}
         </div>
 
