@@ -3,15 +3,22 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/data/products";
+import { useRouter } from "next/navigation";
 
 interface CartSummaryProps {
   subtotal: number;
 }
 
 export default function CartSummary({ subtotal }: CartSummaryProps) {
+  const router = useRouter();
   const shipping = subtotal > 0 ? 5.99 : 0;
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + shipping + tax;
+
+  const handleCheckout = () => {
+    // Navigate to payment page
+    router.push('/payment');
+  };
 
   return (
     <div className="rounded-lg border border-border p-6 bg-card">
@@ -45,6 +52,7 @@ export default function CartSummary({ subtotal }: CartSummaryProps) {
         className="w-full mt-6" 
         size="lg"
         disabled={subtotal <= 0}
+        onClick={handleCheckout}
       >
         Checkout
       </Button>
