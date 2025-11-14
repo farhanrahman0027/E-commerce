@@ -73,7 +73,7 @@ export default function CartPage() {
             </div>
             
             <div className="lg:col-span-1">
-              <CartSummary subtotal={subtotal} />
+              <CartSummary />
             </div>
           </div>
         )}
