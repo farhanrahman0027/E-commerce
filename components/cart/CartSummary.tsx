@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/data/products";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/lib/context/CartContext";
 
-interface CartSummaryProps {
-  subtotal: number;
-}
-
-export default function CartSummary({ subtotal }: CartSummaryProps) {
+export default function CartSummary() {
   const router = useRouter();
-  const shipping = subtotal > 0 ? 5.99 : 0;
-  const tax = subtotal * 0.1; // 10% tax
-  const total = subtotal + shipping + tax;
+  const { getSubtotal, getShipping, getTax, getTotal } = useCart();
+  
+  const subtotal = getSubtotal();
+  const shipping = getShipping();
+  const tax = getTax();
+  const total = getTotal();
 
   const handleCheckout = () => {
     // Navigate to payment page

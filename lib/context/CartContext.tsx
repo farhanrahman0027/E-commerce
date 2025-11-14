@@ -15,6 +15,10 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
+  getSubtotal: () => number;
+  getShipping: () => number;
+  getTax: () => number;
+  getTotal: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -87,6 +91,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     0
   );
 
+  // Helper methods for checkout
+  const getSubtotal = () => subtotal;
+
+  const getShipping = () => {
+    return subtotal > 0 ? 5.99 : 0;
+  };
+
+  const getTax = () => {
+    return subtotal * 0.1; // 10% tax
+  };
+
+  const getTotal = () => {
+    return subtotal + getShipping() + getTax();
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -97,6 +116,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         totalItems,
         subtotal,
+        getSubtotal,
+        getShipping,
+        getTax,
+        getTotal,
       }}
     >
       {children}
