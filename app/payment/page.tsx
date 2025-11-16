@@ -286,7 +286,7 @@ export default function PaymentPage() {
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3">
-                    <div className="w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted flex-shrink-0">
                       <img 
                         src={item.image} 
                         alt={item.title}
